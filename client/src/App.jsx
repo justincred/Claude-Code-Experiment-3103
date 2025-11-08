@@ -23,7 +23,7 @@ function App() {
     try {
       setLoading(true);
       const response = await axios.get('/api/pdf/documents');
-      setDocuments(response.data.documents);
+      setDocuments(Array.isArray(response.data) ? response.data : response.data.documents || []);
       setError(null);
     } catch (err) {
       setError(err.message);
