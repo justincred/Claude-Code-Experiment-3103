@@ -6,7 +6,7 @@
   "main": "server/index.js",
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "server": "node server/index.js",
+    "server": "node --max-old-space-size=4096 server/index.js",
     "client": "cd client && npm run dev",
     "build": "cd client && npm run build",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
