@@ -34,8 +34,8 @@ function DocumentList({ documents, onProcess, onQuiz, onProgress }) {
     }
   };
 
-  const unprocessedPdfs = availablePdfs.filter(
-    pdf => !documents.some(doc => doc.filename === pdf.filename)
+  const unprocessedPdfs = (availablePdfs || []).filter(
+    pdf => !((documents || []).some(doc => doc && doc.filename === (pdf && pdf.filename)))
   );
 
   return (
@@ -59,61 +59,69 @@ function DocumentList({ documents, onProcess, onQuiz, onProgress }) {
           <h2>📄 Available Lecture Materials</h2>
           <p className="subtitle">Click to extract concepts and generate study questions</p>
           <div className="pdf-grid">
-            {unprocessedPdfs.map((pdf) => (
-              <div key={pdf.filename} className="pdf-card">
-                <div className="pdf-icon">
-                  <FiBook size={32} />
+            {unprocessedPdfs.map((pdf) => {
+              if (!pdf || !pdf.filename) return null;
+              const filename = pdf.filename || 'Unknown';
+              const size = pdf.size || 0;
+              return (
+                <div key={pdf.filename} className="pdf-card">
+                  <div className="pdf-icon">
+                    <FiBook size={32} />
+                  </div>
+                  <h3>{filename.replace('.pdf', '')}</h3>
+                  <p className="pdf-size">
+                    {(size / 1024 / 1024).toFixed(1)} MB
+                  </p>
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => handleProcess(filename)}
+                    disabled={processingFile === filename}
+                  >
+                    {processingFile === filename ? 'Processing...' : 'Extract Content'}
+                  </button>
                 </div>
-                <h3>{pdf.filename.replace('.pdf', '')}</h3>
-                <p className="pdf-size">
-                  {(pdf.size / 1024 / 1024).toFixed(1)} MB
-                </p>
-                <button
-                  className="btn btn-primary"
-                  onClick={() => handleProcess(pdf.filename)}
-                  disabled={processingFile === pdf.filename}
-                >
-                  {processingFile === pdf.filename ? 'Processing...' : 'Extract Content'}
-                </button>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       )}
 
-      {documents.length > 0 && (
+      {(documents || []).length > 0 && (
         <section className="processed-section">
           <h2>✅ Processed Materials</h2>
           <div className="documents-list">
-            {documents.map((doc) => (
-              <div key={doc.id} className="document-card">
-                <div className="doc-header">
-                  <h3>{doc.filename.replace('.pdf', '')}</h3>
-                  <span className="doc-date">
-                    {new Date(doc.created_at).toLocaleDateString()}
-                  </span>
+            {(documents || []).map((doc) => {
+              if (!doc || !doc.id) return null;
+              const filename = doc.filename || 'Unknown Document';
+              const createdAt = doc.created_at ? new Date(doc.created_at).toLocaleDateString() : 'Unknown date';
+              return (
+                <div key={doc.id} className="document-card">
+                  <div className="doc-header">
+                    <h3>{filename.replace('.pdf', '')}</h3>
+                    <span className="doc-date">{createdAt}</span>
+                  </div>
+                  <div className="doc-actions">
+                    <button
+                      className="btn btn-primary"
+                      onClick={() => onQuiz(doc.id)}
+                    >
+                      <FiPlayCircle /> Start Quiz
+                    </button>
+                    <button
+                      className="btn btn-secondary"
+                      onClick={() => onProgress(doc.id)}
+                    >
+                      <FiTrendingUp /> View Progress
+                    </button>
+                  </div>
                 </div>
-                <div className="doc-actions">
-                  <button
-                    className="btn btn-primary"
-                    onClick={() => onQuiz(doc.id)}
-                  >
-                    <FiPlayCircle /> Start Quiz
-                  </button>
-                  <button
-                    className="btn btn-secondary"
-                    onClick={() => onProgress(doc.id)}
-                  >
-                    <FiTrendingUp /> View Progress
-                  </button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       )}
 
-      {unprocessedPdfs.length === 0 && documents.length === 0 && (
+      {unprocessedPdfs.length === 0 && (documents || []).length === 0 && (
         <div className="empty-state">
           <div className="empty-icon">📚</div>
           <h2>No materials available</h2>
