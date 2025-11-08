@@ -40,7 +40,7 @@ A sophisticated study tool that maximizes your learning through AI-powered conte
 
 ### Prerequisites
 - Node.js 16+ and npm
-- Anthropic API Key (for Claude integration)
+- Google Gemini API Key (free tier - no credit card required!)
 - PDF lecture materials
 
 ### Installation
@@ -51,30 +51,40 @@ A sophisticated study tool that maximizes your learning through AI-powered conte
    cd Claude-Code-Experiment-3103
    ```
 
-2. **Set up environment variables**
+2. **Get a free Gemini API Key**
+   - Visit: https://ai.google.dev/
+   - Click "Get API Key"
+   - Create a free Google Cloud project (no billing required!)
+
+3. **Set up environment variables**
    ```bash
    cp .env.example .env
-   # Edit .env and add your ANTHROPIC_API_KEY
+   # Edit .env and add your GOOGLE_GEMINI_API_KEY
    ```
 
-3. **Install dependencies**
+4. **Install dependencies**
    ```bash
    npm install
    cd client && npm install && cd ..
    ```
 
-4. **Add your PDF files**
+5. **Add your PDF files**
    - Place your lecture PDF files in the project root directory
    - They will be automatically detected by the application
 
-5. **Start the application**
+6. **Start the application**
    ```bash
    npm run dev
    ```
-   This starts both the backend server (port 5000) and React frontend (port 3000)
+   This starts:
+   - Backend API server (port 5000)
+   - Frontend Vite dev server (port 3000)
 
-6. **Open in browser**
+   Both launch automatically with hot reload enabled!
+
+7. **Open in browser**
    - Navigate to `http://localhost:3000`
+   - The app will auto-refresh when you make code changes
 
 ## 📖 Usage
 
@@ -146,7 +156,7 @@ A sophisticated study tool that maximizes your learning through AI-powered conte
    - Each chunk is processed independently
 
 2. **Concept Generation**
-   - Claude API analyzes chunks
+   - Gemini API analyzes chunks
    - Extracts 5-10 main concepts per chunk
    - Deduplicates similar concepts
 
@@ -155,7 +165,7 @@ A sophisticated study tool that maximizes your learning through AI-powered conte
    - Mix of recall, understanding, and application questions
 
 4. **Answer Evaluation**
-   - Claude evaluates your answer
+   - Gemini evaluates your answer
    - Provides score (0-100%) and feedback
    - Leniently accepts wording variations
 
@@ -177,7 +187,12 @@ A sophisticated study tool that maximizes your learning through AI-powered conte
 ### Server Configuration
 - `PORT` - Server port (default: 5000)
 - `NODE_ENV` - Environment (development/production)
-- `ANTHROPIC_API_KEY` - Claude API key
+- `GOOGLE_GEMINI_API_KEY` - Free Gemini API key
+
+### Frontend
+- Built with **Vite** for ultra-fast development
+- Hot module replacement (HMR) for instant code updates
+- Development server on port 3000
 
 ### Database
 - SQLite database stored in `study.db`
@@ -185,11 +200,18 @@ A sophisticated study tool that maximizes your learning through AI-powered conte
 
 ## 🤖 AI Integration
 
-This tool uses **Claude 3.5 Sonnet** for:
+This tool uses **Google Gemini 2.0 Flash** (free tier) for:
 - Concept extraction from lecture materials
 - Question generation from concepts
 - Answer evaluation and feedback
 - Personalized learning recommendations
+
+**Why Gemini?**
+✅ Completely free (50 requests/minute)
+✅ No credit card required
+✅ Fast inference (~1-2s per request)
+✅ Excellent for educational content
+✅ Generous rate limits for study use
 
 ## 📈 Performance Metrics
 
@@ -203,18 +225,23 @@ Track your improvement across:
 
 ### PDF Not Processing
 - Ensure PDF is in project root directory
-- Check that ANTHROPIC_API_KEY is set
+- Check that `GOOGLE_GEMINI_API_KEY` is set in `.env`
 - Verify PDF is readable (not corrupted)
 
+### Frontend Won't Start
+- Make sure `npm install` completed in both root and `/client` directory
+- Check that port 3000 is available
+- Try: `rm -rf client/node_modules` and `npm install` again
+
 ### Questions Not Loading
-- Wait for processing to complete (may take a few minutes)
-- Check API rate limits
-- Verify database connection
+- Wait for processing to complete (may take 1-2 minutes)
+- Check API rate limits (50 requests/minute for Gemini free tier)
+- Verify database connection: check if `study.db` exists
 
 ### Poor Answer Evaluations
-- Provide detailed answers
-- Use terminology from the course
-- Be specific in explanations
+- Provide detailed answers (2-3 sentences)
+- Use terminology from the course materials
+- Be specific in explanations, don't just list facts
 
 ## 📝 License
 
