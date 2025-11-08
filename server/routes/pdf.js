@@ -38,15 +38,18 @@ router.post('/process', async (req, res) => {
       [docId, filename, text]
     );
 
-    // Chunk the text for processing
-    const chunks = chunkText(text, 2000, 200);
+    // Chunk the text for processing (larger chunks = fewer API calls)
+    const chunks = chunkText(text, 3000, 300);
+
+    // Limit to first 3 chunks to reduce API calls and memory usage
+    const chunksToProcess = chunks.slice(0, Math.min(3, chunks.length));
 
     // Generate concepts from each chunk
     let allConcepts = [];
-    for (let i = 0; i < chunks.length; i++) {
+    for (let i = 0; i < chunksToProcess.length; i++) {
       try {
-        console.log(`Processing chunk ${i + 1}/${chunks.length}...`);
-        const concepts = await generateConceptsFromText(chunks[i], filename);
+        console.log(`Processing chunk ${i + 1}/${chunksToProcess.length}...`);
+        const concepts = await generateConceptsFromText(chunksToProcess[i], filename);
         allConcepts = allConcepts.concat(concepts);
       } catch (error) {
         console.error(`Error processing chunk ${i + 1}:`, error.message);
@@ -63,8 +66,8 @@ router.post('/process', async (req, res) => {
       }
     }
 
-    // Save concepts to database (limit to 15 for faster processing)
-    const conceptsToSave = uniqueConcepts.slice(0, 15);
+    // Save concepts to database (limit to 10 for faster processing and reduced API calls)
+    const conceptsToSave = uniqueConcepts.slice(0, 10);
     const savedConcepts = [];
 
     for (const concept of conceptsToSave) {
