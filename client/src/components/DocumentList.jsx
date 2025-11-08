@@ -6,6 +6,7 @@ import './DocumentList.css';
 function DocumentList({ documents, onProcess, onQuiz, onProgress }) {
   const [availablePdfs, setAvailablePdfs] = useState([]);
   const [processingFile, setProcessingFile] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchAvailablePdfs();
@@ -14,9 +15,13 @@ function DocumentList({ documents, onProcess, onQuiz, onProgress }) {
   const fetchAvailablePdfs = async () => {
     try {
       const response = await axios.get('/api/pdf/available');
-      setAvailablePdfs(response.data.pdfs);
+      const pdfs = Array.isArray(response.data) ? response.data : response.data.pdfs || [];
+      setAvailablePdfs(pdfs);
+      setError(null);
     } catch (error) {
       console.error('Error fetching PDFs:', error);
+      setError('Failed to load PDF files. Make sure the server is running.');
+      setAvailablePdfs([]);
     }
   };
 
@@ -35,6 +40,20 @@ function DocumentList({ documents, onProcess, onQuiz, onProgress }) {
 
   return (
     <div className="document-list">
+      {error && (
+        <div style={{
+          background: '#fee',
+          border: '2px solid #f88',
+          color: '#c33',
+          padding: '1rem',
+          borderRadius: '8px',
+          marginBottom: '1rem',
+          fontWeight: '500'
+        }}>
+          {error}
+        </div>
+      )}
+
       {unprocessedPdfs.length > 0 && (
         <section className="unprocessed-section">
           <h2>📄 Available Lecture Materials</h2>

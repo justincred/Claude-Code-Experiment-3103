@@ -69,6 +69,11 @@ function App() {
     setView('documents');
     setSelectedDocument(null);
     setConcepts([]);
+    setError(null);
+  };
+
+  const clearError = () => {
+    setError(null);
   };
 
   return (
@@ -81,7 +86,15 @@ function App() {
       <main className="app-content">
         {error && (
           <div className="error-message">
-            ⚠️ {error}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>⚠️ {error}</span>
+              <button
+                style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '20px' }}
+                onClick={clearError}
+              >
+                ✕
+              </button>
+            </div>
           </div>
         )}
 

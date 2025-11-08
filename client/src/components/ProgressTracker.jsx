@@ -6,6 +6,7 @@ import './ProgressTracker.css';
 function ProgressTracker({ documentId, onBack, onQuiz }) {
   const [progress, setProgress] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchProgress();
@@ -14,10 +15,13 @@ function ProgressTracker({ documentId, onBack, onQuiz }) {
   const fetchProgress = async () => {
     try {
       setLoading(true);
+      setError(null);
       const response = await axios.get(`/api/study/progress/${documentId}`);
       setProgress(response.data);
     } catch (error) {
       console.error('Error fetching progress:', error);
+      setError('Failed to load progress data. Please try again.');
+      setProgress(null);
     } finally {
       setLoading(false);
     }
@@ -31,13 +35,18 @@ function ProgressTracker({ documentId, onBack, onQuiz }) {
     );
   }
 
-  if (!progress) {
+  if (error || !progress) {
     return (
       <div className="progress-tracker">
         <button className="btn btn-secondary back-btn" onClick={onBack}>
           <FiArrowLeft /> Back to Documents
         </button>
-        <div className="error-message">Could not load progress data</div>
+        <div className="error-message">
+          {error || 'Could not load progress data'}
+        </div>
+        <button className="btn btn-primary" onClick={fetchProgress} style={{ marginTop: '1rem' }}>
+          Retry
+        </button>
       </div>
     );
   }
